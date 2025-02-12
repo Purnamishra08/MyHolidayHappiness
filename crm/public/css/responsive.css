@@ -1,0 +1,39 @@
+@media (max-width: 768px) {
+  .slide-content {
+    right: 50%;
+    -webkit-transform: translate(4%, -50%);
+    -ms-transform: translate(4%, -50%);
+    transform: translate(4%, -50%);
+  }
+  .service-item .service-item-inner {
+    margin: 1.5rem 0;
+  }
+  .testimonial-section .carousel {
+    max-width: 90%;
+  }
+  .carousel-control-next {
+    right: -6rem;
+  }
+  .carousel-control-prev {
+    left: -6rem;
+  }
+  .gole {
+    margin: 1.5rem 0;
+  }
+}
+@media (max-width: 600px) {
+  .testimonial-section .carousel {
+    max-width: 80%;
+  }
+  .carousel-control-next {
+    right: -5rem;
+  }
+  .carousel-control-prev {
+    left: -5rem;
+  }
+  .slide-content {
+  top: 75%;
+  left: 11%;
+  width:70%;
+}
+}

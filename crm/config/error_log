@@ -1,0 +1,4 @@
+[23-Sep-2023 09:54:53 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home3/myholhq7/public_html/crm/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home3/myholhq7/public_html/crm/config/database.php on line 18

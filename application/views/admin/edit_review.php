@@ -1,6 +1,7 @@
 <?php
 	foreach ($editplace as $rows)
 	{
+        $itinerary_id = $rows['tourtagid'];
 		$review_id = $rows['review_id'];
 		$reviewer_name = $rows['reviewer_name'];
 		$reviewer_loc = $rows['reviewer_loc'];
@@ -9,6 +10,7 @@
 		$status = $rows['status'];
 		$created_date = $rows['created_date'];		
 	}
+    $get_tag_array = $itinerary_id;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,7 +94,20 @@
                                                         <textarea name="feedback_msg" id="feedback_msg" class="form-control "><?php echo $feedback_msg; ?></textarea>
                                                 </div>
                                                 </div>
-
+                                                <div class="col-md-6"> 
+                                                <div class="form-group">
+                                                    <label> Associated Tour Tag </label>
+                                                    <?php   
+                                                        $get_getawaytags = $this->Common_model->get_records("tagid, tag_name", "tbl_menutags", "status = '1' and menuid = '3'", "tag_name asc", "");
+													?>
+                                                    <select data-placeholder="Choose tour tags" class="chosen-select" multiple tabindex="4" id="getatagid"  name="getatagid[]" style="width: 100%;height: auto;border: 1px solid #aaa;background-image: -webkit-gradient(linear, left top, left bottom, color-stop(1%, #eee), color-stop(15%, #fff));background-image: linear-gradient(#eee 1%, #fff 15%);cursor: text; font-size:13px; padding:5px 7px;">
+														<?php foreach ($get_getawaytags as $get_getawaytag) { ?>
+														<option value="<?= $get_getawaytag['tagid'] ?>"><?= $get_getawaytag['tag_name'] ?></option>
+														<?php } ?>
+                                                    </select> 
+                                                </div>
+                                                <div id="gettourtag_err"></div>
+											</div>
                                       
 										   
 										    
@@ -115,6 +130,23 @@
     <?php include("footer.php"); ?>
     <script src="<?php echo base_url(); ?>assets/admin/js_validation/jquery.validate.js" type="text/javascript"></script>
     <script src="<?php echo base_url(); ?>assets/admin/js_validation/validation.js"></script>
+    <script src="<?php echo base_url(); ?>assets/admin/js/chosen.jquery.js" type="text/javascript"></script>
+    <script src="<?php echo base_url(); ?>assets/admin/ckeditor/ckeditor.js" type="text/javascript"></script>
+    <script>
+        $(document).ready(function(){
+				$('#getatagid').chosen();
+                //for tag type
+				var tag_params = "<?php echo $itinerary_id ?>";
+				if(tag_params != '') {	
+					var rstr = tag_params.replace(/,\s*$/, ""); //remove last comma from string
+					var tag_array_data = rstr.split(",");
+					$.each(tag_array_data, function (index, val) {
+						$("#getatagid option[value=" + val + "]").attr('selected', 'selected');
+					});
+					$('#getatagid').trigger('chosen:updated');
+				}
+		});
+    </script>
     </body>
 </html>
 

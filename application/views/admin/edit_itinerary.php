@@ -362,7 +362,7 @@ if (!empty($getplacetypeid)) {
 		<script src="<?php echo base_url(); ?>assets/admin/js/chosen.jquery.js" type="text/javascript"></script>
 
 		<script>
-			$(document.body).on('keyup change', '#itinerary_name', function() {
+			/*$(document.body).on('keyup change', '#itinerary_name', function() {
 				$("#itinerary_url").val(name_to_url($(this).val()));
 			});
 			function name_to_url(name) {
@@ -371,7 +371,7 @@ if (!empty($getplacetypeid)) {
 				name = name.replace(/\s+/g, '-'); // convert (continuous) whitespaces to one -
 				name = name.replace(/[^a-z0-9-]/g, ''); // remove everything that is not [a-z] or -
 				return name;
-			}
+			}*/
 		</script> 
 			
 		<script>

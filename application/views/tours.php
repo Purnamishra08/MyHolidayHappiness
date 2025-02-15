@@ -271,7 +271,10 @@ if(!empty($tag_data)){
 
 		<div class="clearfix"></div>
 		<section class="innergoogle-review" >
-            <?php include("verified_reviews.php"); ?>  
+            <?php
+				include("verified_reviews.php");
+				getVerifiedReviews($tour_tagid);
+			?>  
         </section>
         
         

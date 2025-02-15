@@ -10,10 +10,30 @@
 			<a href="<?php echo base_url().'review'; ?>" class="reviewviewbtn2">View all reviews</a>
 		</div>
 		
-		
+		<?php
+			// $tour_tagid = '';
+			function getVerifiedReviews($tour_tagid) {
+				$tour_tagid = isset($_GET['tour_tagid']) ? $_GET['tour_tagid'] : '';
+			}
+		?>
 		<div class="sb-container col-md-12 container-example1">						
 			<?php 
-				$all_reviews = $this->Common_model->get_records("*","tbl_reviews","status=1","review_id desc","40");
+				$where_conditions = "status = 1";
+
+				// Add the conditions dynamically if the parameters are available
+				if (isset($tour_tagid) && $tour_tagid != '') {
+					$where_conditions .= " AND FIND_IN_SET($tour_tagid, tourtagid)";
+				}
+
+				$all_reviews = $this->Common_model->get_records(
+					"*", 
+					"tbl_reviews", 
+					$where_conditions,  // Use the dynamic WHERE conditions
+					"review_id DESC", 
+					"40"
+				);
+
+				// print_r($all_reviews);exit;
 				if(!empty($all_reviews)) {
 				foreach($all_reviews as $all_review) {
 					$no_of_star =  $all_review['no_of_star'] ; 

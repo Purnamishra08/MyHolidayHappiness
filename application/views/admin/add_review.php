@@ -81,6 +81,20 @@
                                                 </div>
                                                 <div id="placetype_err">  </div>
                                                 </div>
+                                                <div class="col-md-6"> 
+                                                <div class="form-group">
+                                                    <label> Associated Tour Tag </label>
+                                                    <?php   
+                                                        $get_getawaytags = $this->Common_model->get_records("tagid, tag_name", "tbl_menutags", "status = '1' and menuid = '3'", "tag_name asc", "");
+													?>
+                                                    <select data-placeholder="Choose tour tags" class="chosen-select" multiple tabindex="4" id="getatagid"  name="getatagid[]" style="width: 100%;height: auto;border: 1px solid #aaa;background-image: -webkit-gradient(linear, left top, left bottom, color-stop(1%, #eee), color-stop(15%, #fff));background-image: linear-gradient(#eee 1%, #fff 15%);cursor: text; font-size:13px; padding:5px 7px;">
+														<?php foreach ($get_getawaytags as $get_getawaytag) { ?>
+														<option value="<?= $get_getawaytag['tagid'] ?>"><?= $get_getawaytag['tag_name'] ?></option>
+														<?php } ?>
+                                                    </select> 
+                                                </div>
+                                                <div id="gettourtag_err"></div>
+											</div>
                                                
                                                 <div class="clearfix"></div> 
 												
@@ -103,10 +117,13 @@
     <?php include("footer.php"); ?>
     <script src="<?php echo base_url(); ?>assets/admin/js_validation/jquery.validate.js" type="text/javascript"></script>
     <script src="<?php echo base_url(); ?>assets/admin/js_validation/validation.js"></script>
-    <script src="<?php echo base_url(); ?>assets/admin/ckeditor/ckeditor.js" type="text/javascript"></script>
     <script src="<?php echo base_url(); ?>assets/admin/js/chosen.jquery.js" type="text/javascript"></script>
+    <script src="<?php echo base_url(); ?>assets/admin/ckeditor/ckeditor.js" type="text/javascript"></script>
 
     <script>
+        $(document).ready(function(){
+			$('#getatagid').chosen();
+		});
     $(document.body).on('keyup change', '#place_name', function() {
         $("#place_url").val(name_to_url($(this).val()));
     });
@@ -116,23 +133,7 @@
         name = name.replace(/\s+/g, '-'); // convert (continuous) whitespaces to one -
         name = name.replace(/[^a-z0-9-]/g, ''); // remove everything that is not [a-z] or -
         return name;
-    }
+    }	
     </script>
-
-    <script type="text/javascript">
-        CKEDITOR.replace('short_desc');
-		$(document).ready(function(){
-			$('#edesti').chosen();    
-			$('#transport').chosen();   
-			$('#place_typedfd').chosen(); 
-			$('#place_type').chosen();
-			$('#getatagid').chosen();
-			$("#edesti").change(function () {
-				var menu = $(this);
-			});
-		});
-        </script>
-
     </body>
 </html>
-

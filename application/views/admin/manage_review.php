@@ -96,6 +96,7 @@
                                                     <th width="5%">SI #</th>
                                                     <th width="11%">Name</th>
                                                     <th width="10%">Location</th>
+                                                    <th width="10%">Tour tags</th>
                                                     <th width="12%">No of Star</th>
                                                     <th width="30%">Review</th>
                                                     <th width="10%">Review Date</th>
@@ -235,6 +236,9 @@
                     },
                     {
                         data: "reviewer_loc"
+                    },
+                    {
+                        data: "tag_name"
                     },
                     {
                         data: "star_field"

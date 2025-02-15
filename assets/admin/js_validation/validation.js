@@ -1990,6 +1990,9 @@ jQuery(document).ready(function () {
 	/*Add review*/
 	jQuery("#form_review").validate({
 		rules: {
+            getassocid:{
+                required: true
+            },
 			reviewer_name: {
 				required: true
 			},
@@ -2004,7 +2007,9 @@ jQuery(document).ready(function () {
 			},
 		},
 		messages: {
-
+            getassocid:{
+                required: "Choose associated categories tag"
+            },
 			reviewer_name: {
 				required: "Enter name"
 			},

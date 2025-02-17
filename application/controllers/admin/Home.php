@@ -25,9 +25,9 @@ class Home extends CI_Controller {
 			$this->form_validation->set_rules('password','Password','trim|required');
 			if ($this->form_validation->run() == true)
 			{		
-				$recaptchaResponse = $this->Common_model->verifyCaptcha($this->input->post('g-recaptcha-response'));
-				if ($recaptchaResponse)  //Captcha Successfull
-				{	
+				// $recaptchaResponse = $this->Common_model->verifyCaptcha($this->input->post('g-recaptcha-response'));
+				// if ($recaptchaResponse)  //Captcha Successfull
+				// {	
 					$email = $this->input->post('email');
 					$password = $this->input->post('password');
 					//$pwd = sha1($password);
@@ -77,11 +77,11 @@ class Home extends CI_Controller {
 					{
 						$data['message'] = '<div class="errormsg notification"><i class="fa fa-times"></i> Invalid Login. Please try again.</div>';
 					}		
-				}
-				else
-				{
-					$data['message'] = '<div class="errormsg notification"><i class="fa fa-times"></i> reCAPTCHA verification failed. Please try again.</div>';
-				}	
+				// }
+				// else
+				// {
+				// 	$data['message'] = '<div class="errormsg notification"><i class="fa fa-times"></i> reCAPTCHA verification failed. Please try again.</div>';
+				// }	
 			}
 			else
 			{

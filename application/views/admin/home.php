@@ -100,12 +100,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label for="inputPassword3" class="col-sm-3 control-label"></label>
                                         <div class="col-sm-9">
                                             <div class="g-recaptcha" data-sitekey="<?php echo $this->config->item('google_key') ?>"></div>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="form-group last">
                                         <div class="col-sm-offset-3 col-sm-9">

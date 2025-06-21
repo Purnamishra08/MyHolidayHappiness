@@ -4,6 +4,87 @@
 		<?php include("head.php"); ?> 
 		
 	</head>
+<!-- SCHEMAS -->
+<?php 
+$mostpopular_tours = $this->Common_model->join_records(
+    "a.*, b.cat_name", 
+    "tbl_menutags as a", 
+    "tbl_menucateories as b",
+    "a.cat_id=b.catid", 
+    "a.menuid=3 and a.status=1 and show_on_home=1 and a.tagid IN (SELECT tagid FROM `tbl_tags` WHERE type=3)",
+    "",
+    "8"
+);
+
+// Product/WebPage schemas
+$productSchemas = [];
+foreach ($mostpopular_tours as $tour) {
+    $tagurl = $tour['tag_url'];
+    $catname = $tour['cat_name'];
+    $cat_seomenu = $this->Common_model->makeSeoUrl($catname);
+
+    $productSchemas[] = [ // use [] to append each schema
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage', // or 'Product' if more appropriate
+        'name' => $tour['meta_title'] ?? '',
+        'url' => base_url('tours/'.$cat_seomenu.'/'.$tagurl),
+        'offers' => $tour['meta_keywords'] ?? '',
+        'description' => $tour['meta_description'] ?? '',
+        'publisher' => $organization_schema // assumed to be already defined
+    ];
+}
+// Blogs for home page
+$blogDataShow = $this->Common_model->get_records("*", "tbl_blog", "status='1' and show_in_home='1'", "blogid desc", "3", "0");
+
+$blogSchemas = [];
+// print_r($blogDataShow);
+foreach ($blogDataShow as $blog) {
+    // Fallback if Laravel's Str::limit() is not available
+    $description = strip_tags(html_entity_decode($blog['blog_meta_description']));
+    $shortDescription = strlen($description) > 160 ? substr($description, 0, 157) . '...' : $description;
+
+    $blogSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "BlogPosting",
+        "mainEntityOfPage" => [
+            "@type" => "WebPage",
+            "@id" => base_url() . 'blog/' . $blog['blog_url']
+        ],
+        "headline" => $blog['title'],
+        "image" => base_url() . 'uploads/' . $blog['image'],
+        "datePublished" => date('c', strtotime($blog['created_date'])),
+        "dateModified" => date('c', strtotime($blog['created_date'])),
+        "author" => [
+            "@type" => "TravelAgency",
+            "name" => "My Holiday Happiness",
+            "url" => base_url()
+        ],
+        "publisher" => [
+            "@type" => "Organization",
+            "name" => "My Holiday Happiness",
+            "logo" => [
+                "@type" => "ImageObject",
+                "url" => "https://myholidayhappiness.com/assets/images/logo.png"
+            ]
+        ],
+        "description" => $shortDescription,
+    ];
+}
+?>
+
+<?php if (!empty($productSchemas)): ?>
+<script type="application/ld+json">
+<?= json_encode($productSchemas, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT); ?>
+</script>
+<?php endif; ?>
+
+<?php if (!empty($blogSchemas)): ?>
+<script type="application/ld+json">
+<?= json_encode($blogSchemas, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT); ?>
+</script>
+<?php endif; ?>
+
+    <!-- SCHEMAS -->
     <body>
         <style>
           .videocontainer img{
@@ -68,7 +149,6 @@
 			<?php echo  $this->Common_model->showname_fromid("page_content","tbl_contents","content_id ='1'"); ?>        
         </section>
 		<?php
-			$mostpopular_tours = $this->Common_model->join_records("a.*, b.cat_name", "tbl_menutags as a", "tbl_menucateories as b","a.cat_id=b.catid", "a.menuid=3 and a.status=1 and show_on_home=1 and a.tagid IN (SELECT tagid FROM `tbl_tags` WHERE type=3)","","8");
 			if( !empty($mostpopular_tours))
 			{
 		?>

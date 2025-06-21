@@ -362,14 +362,26 @@ $organization_schema = [
         'postalCode' => '560010'
     ]
 ];
+    // WebPage Schema
+    $webPageSchema=[
+        "@context" => "https://schema.org",
+        "@type" => "WebPage",
+        "name" => $meta_title ?? 'My Holiday Happiness - Package Tours & Travel',
+        "url" => $page_url,
+        "description" => $meta_description ?? "My Holiday Happiness is India’s leading travel and tourism company providing tour packages across India.",
+        "keywords" => $meta_keywords ?? "holiday packages, tour packages, tours & travels, travel packages, 2 night 3 days package, ooty packages, Coorg Packages, Mysore Tour Packages, Pondicherry Tour package, Munnar Tour Packages, Mangalore tour package, Madurai Tour Packages, Kerala Tour Packages, Karnataka Packages",
+        "inLanguage" => "en"
+    ]; 
 
 // JSON-LD for the Organization
 $organization_json = json_encode($organization_schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+$webPageSchema_json = json_encode($webPageSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 // Check if it's the homepage
 if ($this->uri->uri_string() == '') {
     // Output the organization schema for the homepage
     echo "<script type='application/ld+json'>\n$organization_json\n</script>";
+    echo "<script type='application/ld+json'>\n$webPageSchema_json\n</script>";
 } else {
     // Schema JSON-LD for other pages
     $page_schema = [

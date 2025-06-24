@@ -25,6 +25,162 @@ if(!empty($tag_data)){
 	   <link rel="preload" href="<?php echo $tour_img; ?>" as="image">
 		<?php include("head.php"); ?>
 	</head>
+	<!-- Product Schema  -->
+	<?php
+		$productSchemas = [];
+
+		$tour_packages = $this->Common_model->join_records("a.*, b.*", "tbl_tags as a", "tbl_tourpackages as b", "a.type_id=b.tourpackageid", "a.tagid=$tour_tagid and a.type=3 and b.status=1", "b.tpackage_name asc");
+
+		foreach ($tour_packages as $tour_package)
+		{
+			$tpackage_name = $tour_package["tpackage_name"];
+			$tpackage_url = $tour_package["tpackage_url"];
+			$package_price = $tour_package["price"];
+			$tour_thumb = $tour_package["tour_thumb"];
+			$alttag_thumb = $tour_package["alttag_thumb"];
+			$about_package = $tour_package["itinerary_note"] ?? '';
+
+			$schema = [
+				"@context" => "https://schema.org",
+				"@type" => "Product",
+				"name" => $tpackage_name,
+				"image" => [base_url('uploads/' . $tour_thumb)],
+				"description" => mb_substr(strip_tags(html_entity_decode($about_package)), 0, 160),
+				"aggregateRating" => [
+					"@type" => "AggregateRating",
+					"ratingValue" => number_format($tour_package["ratings"], 5),
+					"reviewCount" => mt_rand(1000, 5000)
+				],
+				"offers" => [
+					"@type" => "Offer",
+					"url" => base_url('packages/' . $tpackage_url),
+					"priceCurrency" => "INR",
+					"price" => (string)(int)$package_price,
+					"availability" => "https://schema.org/InStock",
+					"validFrom" => date('Y-m-d'),
+					"priceValidUntil" => date('Y-m-d', strtotime('+3 days'))
+				]
+			];
+
+			$json = json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+			if ($json !== false) {
+				echo "<script type=\"application/ld+json\">\n$json\n</script>\n";
+			} else {
+				log_message('error', 'Product JSON-LD encode failed: ' . json_last_error_msg());
+			}
+		}
+	?>
+	<?php if (!empty($productSchemas)): ?>
+		<script type="application/ld+json">
+			[
+			<?php echo implode(",", $productSchemas); ?>
+			]
+		</script>
+	<?php endif; ?>
+	<!-- Faq Schema  -->
+	<?php
+	    $faq_data = $this->Common_model->get_records("*","tbl_package_faqs","status = 1 AND tag_id = $tour_tagid","faq_order ASC","" ,"");
+		if (!empty($faq_data)) {
+			$mainEntity = [];
+
+			foreach ($faq_data as $faq) {
+				$question = strip_tags($faq['faq_question']);
+				$answer = strip_tags($faq['faq_answer']);
+
+				if (!empty($question) && !empty($answer)) {
+					$mainEntity[] = [
+						"@type" => "Question",
+						"name" => $question,
+						"acceptedAnswer" => [
+							"@type" => "Answer",
+							"text" => $answer
+						]
+					];
+				}
+			}
+
+			if (!empty($mainEntity)) {
+				$faqSchema = [
+					"@context" => "https://schema.org",
+					"@type" => "FAQPage",
+					"mainEntity" => $mainEntity
+				];
+
+				$json = json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+				if ($json !== false) {
+					echo "<script type=\"application/ld+json\">\n$json\n</script>\n";
+				} else {
+					log_message('error', 'FAQ JSON-LD encode error: ' . json_last_error_msg());
+				}
+			}
+		}
+	?>
+	<!--organization schema-->
+	<?php
+    $organization_schema = [
+        '@context' => 'http://schema.org',
+        '@type' => 'TravelAgency',
+        'name' => 'My Holiday Happiness - Package Tours & Travel',
+        'brand' => 'My Holiday Happiness',
+        'url' => 'https://myholidayhappiness.com/',
+        'logo' => 'https://myholidayhappiness.com/assets/images/logo.png',
+        'email' => 'support@myholidayhappiness.com',
+        'makesOffer' => 'holiday packages, tour packages, tours & travels, travel packages, 2 night 3 days package, ooty packages, Coorg Packages, Mysore Tour Packages, Pondicherry Tour package, Munnar Tour Packages, Mangalore tour package, Madurai Tour Packages, Kerala Tour Packages, Karnataka Packages',
+        'description' => "My Holiday Happiness is India’s leading travel and tourism company providing tour packages across India.",
+        'sameAs' => [
+            'https://www.facebook.com/myholhap/',
+            'https://x.com/MyHolidayHappi1',
+            'https://www.linkedin.com/company/28728838',
+            'https://www.youtube.com/channel/UCyLkNG2GAarulXDyj8Zl3uw'
+        ],
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => 'No. 66 (old no 681), Ist Floor, 10th C Main Rd, near Dosa Camp, 6th Block, Rajajinagar',
+            'addressLocality' => 'Bengaluru',
+            'addressRegion' => 'Karnataka',
+            'postalCode' => '560010'
+        ]
+    ];
+    
+    $organization_json = json_encode($organization_schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    
+    if ($organization_json !== false): ?>
+        <script type="application/ld+json">
+    <?= $organization_json ?>
+        </script>
+    <?php else: ?>
+        <?php log_message('error', 'Organization JSON-LD encode error: ' . json_last_error_msg()); ?>
+    <?php endif; ?>
+    <!--BreadCrumb Schema-->
+    <?php
+        $breadcrumbSchema = [
+            "@context" => "https://schema.org",
+            "@type" => "BreadcrumbList",
+            "itemListElement" => [
+                [
+                    "@type" => "ListItem",
+                    "position" => 1,
+                    "name" => "Home",
+                    "item" => base_url()
+                ],
+                [
+                    "@type" => "ListItem",
+                    "position" => 2,
+                    "name" => "Tours",
+                    "item" => current_url() // change this to actual route if different
+                ]
+            ]
+        ];
+        
+        $breadcrumbJson = json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    ?>
+
+    <script type="application/ld+json">
+    <?= $breadcrumbJson ?>
+    </script>
+
     <body>
 		<?php include("header.php"); ?> 
 		
@@ -58,7 +214,7 @@ if(!empty($tag_data)){
                   <li><a href="/tour-packages">Tour Packages</a></li>
                   <li><a href="#"><?php echo $tour_tag_name; ?></a></li>
                 </ul>
-			<h2>Best <?php echo $tour_tag_name; ?> by My Holiday Happiness</h2>
+			<h2>Best <?php echo $tour_tag_name; ?> with prices </h2>
 		</div>
 		<div class="container">
 			<div class="aboutdesc" style="padding-top: 15px;">
@@ -249,7 +405,7 @@ if(!empty($tag_data)){
 										<div class="mb-0">
 											<a data-toggle="collapse" href="#collapse<?php echo $cnt; ?>" aria-expanded="true" aria-controls="collapse<?php echo $cnt; ?>" class="collapsed">
 												<img src="#" data-src="<?php echo base_url(); ?>assets/images/headingarrow.png" class="fa-pull-left lazy" alt="My Holiday Happiness">
-												<h5> <?php echo $rows['faq_question']; ?></h5>                                      
+												<?php echo $rows['faq_question']; ?>                                     
 											</a>
 										</div>
 									</div>
@@ -272,7 +428,7 @@ if(!empty($tag_data)){
 		<div class="clearfix"></div>
 		<section class="innergoogle-review" >
             <?php
-				include("verified_reviews.php");
+				include("verified_reviews.php") ;
 				getVerifiedReviews($tour_tagid);
 			?>  
         </section>

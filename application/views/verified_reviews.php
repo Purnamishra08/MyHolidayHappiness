@@ -35,8 +35,32 @@
 
 				// print_r($all_reviews);exit;
 				if(!empty($all_reviews)) {
+				$reviewSchema = [];
 				foreach($all_reviews as $all_review) {
 					$no_of_star =  $all_review['no_of_star'] ; 
+					// Extract and validate
+					$reviewer_name  = strip_tags($all_review['reviewer_name'] ?? '');
+					$review_rating  = (float)($all_review['no_of_star'] ?? 0);
+					$feedback_msg   = strip_tags($all_review['feedback_msg'] ?? '');
+					$review_date    = !empty($all_review['created_date']) ? date('Y-m-d', strtotime($all_review['created_date'])) : date('Y-m-d');
+					
+					if ($reviewer_name && $review_rating && $feedback_msg) {
+						$reviewSchema[] = [
+							"@context" => "https://schema.org",
+							"@type" => "Review",
+							"author" => [
+								"@type" => "Person",
+								"name" => $reviewer_name
+							],
+							"reviewRating" => [
+								"@type" => "Rating",
+								"ratingValue" => $review_rating,
+								"bestRating" => "5"
+							],
+							"reviewBody" => $feedback_msg,
+							"datePublished" => $review_date
+						];
+					}
 			?>
 			<div class="googlereview-innerbox">
 				<div class="googlereview-txt">
@@ -64,8 +88,19 @@
 				</div>
 			</div>
 			
-			<?php } 
-			}
+			<?php 
+    				} 
+    			}
+    			if (!empty($reviewSchema)) {
+    				foreach ($reviewSchema as $schema) {
+    					$json = json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    					if ($json !== false) {
+    						echo "<script type=\"application/ld+json\">\n$json\n</script>\n";
+    					} else {
+    						log_message('error', 'Review schema encoding failed: ' . json_last_error_msg());
+    					}
+    				}
+    			}
 			?>
 			
 		</div>

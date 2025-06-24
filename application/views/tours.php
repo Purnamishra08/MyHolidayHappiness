@@ -38,7 +38,7 @@ if(!empty($tag_data)){
 			$package_price = $tour_package["price"];
 			$tour_thumb = $tour_package["tour_thumb"];
 			$alttag_thumb = $tour_package["alttag_thumb"];
-			$about_package = $tour_package["itinerary_note"] ?? '';
+			$about_package = $tour_package["meta_description"] ?? '';
 
 			$schema = [
 				"@context" => "https://schema.org",
@@ -58,7 +58,51 @@ if(!empty($tag_data)){
 					"price" => (string)(int)$package_price,
 					"availability" => "https://schema.org/InStock",
 					"validFrom" => date('Y-m-d'),
-					"priceValidUntil" => date('Y-m-d', strtotime('+3 days'))
+					"priceValidUntil" => date('Y-m-d', strtotime('+3 days')),
+					"hasMerchantReturnPolicy" => [
+						"@type" => "MerchantReturnPolicy",
+						"returnPolicyCategory" => "https://schema.org/Returnable",
+						"merchantReturnDays" => 10,
+						"returnMethod" => "https://schema.org/CancellationPolicy",
+						"returnFees" => "https://schema.org/RestockingFees",
+						"additionalProperty" => [
+							[
+								"@type" => "PropertyValue",
+								"name" => "Refund Processing Time",
+								"value" => "Any/every refund shall take about 10 business days to get credited to the original payment method."
+							],
+							[
+								"@type" => "PropertyValue",
+								"name" => "Cab Strike Policy",
+								"value" => "100% refund in case of a cab strike."
+							],
+							[
+								"@type" => "PropertyValue",
+								"name" => "Natural Calamities Policy",
+								"value" => "85% refund in case of natural calamities or pandemics (e.g. Corona or other transmissible diseases)."
+							],
+							[
+								"@type" => "PropertyValue",
+								"name" => "Agency Cancellation Policy",
+								"value" => "100% refund in the rare case of cancellation by My Holiday Happiness due to unavoidable or extreme situations."
+							],
+							[
+								"@type" => "PropertyValue",
+								"name" => "Hotel Room Unavailability",
+								"value" => "100% refund in the rare case of last-minute hotel room unavailability (if the alternate hotel provided is unsatisfactory)."
+							],
+							[
+								"@type" => "PropertyValue",
+								"name" => "Missed Sightseeing Policy",
+								"value" => "No refunds will be issued for missed sightseeing places."
+							],
+							[
+								"@type" => "PropertyValue",
+								"name" => "Refund Mode",
+								"value" => "Your refund will be credited to your original source of payment."
+							]
+						]
+					]
 				]
 			];
 
@@ -165,9 +209,21 @@ if(!empty($tag_data)){
                     "name" => "Home",
                     "item" => base_url()
                 ],
-                [
+				[
                     "@type" => "ListItem",
                     "position" => 2,
+                    "name" => "Tours",
+                    "item" => base_url()."$this->uri->segment(1)"
+                ],
+				[
+                    "@type" => "ListItem",
+                    "position" => 3,
+                    "name" => "Tours",
+                    "item" => base_url()."tours/ $category = $this->uri->segment(2);"
+                ],
+                [
+                    "@type" => "ListItem",
+                    "position" => 4,
                     "name" => "Tours",
                     "item" => current_url() // change this to actual route if different
                 ]
@@ -429,7 +485,7 @@ if(!empty($tag_data)){
 		<section class="innergoogle-review" >
             <?php
 				include("verified_reviews.php") ;
-				getVerifiedReviews($tour_tagid);
+				getVerifiedReviews($tour_tagid, $tour_tag_name);
 			?>  
         </section>
         

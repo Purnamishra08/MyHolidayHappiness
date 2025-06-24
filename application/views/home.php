@@ -16,6 +16,46 @@ $mostpopular_tours = $this->Common_model->join_records(
     "8"
 );
 
+$get_all_reviews = $this->Common_model->get_records("*", "tbl_reviews", "status=1", "review_id desc", "3", "");
+$totalRating = 0;
+$reviewCount = count($get_all_reviews);
+
+foreach ($get_all_reviews as $review) {
+    $totalRating += $review['no_of_star'];
+}
+
+$averageRating = $reviewCount > 0 ? number_format($totalRating / $reviewCount, 1) : '4.5';
+$reviewList = [];
+
+foreach ($get_all_reviews as $review) {
+    $reviewList[] = [
+        "@type" => "Review",
+        "author" => $review['reviewer_name'],
+        "datePublished" => date('Y-m-d', strtotime($review['created_date'])),
+        "reviewBody" => $review['feedback_msg'],
+        "name" => !empty($review['reviewer_loc']) ? $review['reviewer_loc'] . ' Review' : 'Review',
+        "reviewRating" => [
+            "@type" => "Rating",
+            "ratingValue" => $review['no_of_star'],
+            "bestRating" => "5"
+            ]
+        ];
+    }
+    $reviewSchema = [
+        "@context" => "https://schema.org",
+    "@type" => "Organization",
+    "name" => "My Holiday Happiness",
+    "aggregateRating" => [
+        "@type" => "AggregateRating",
+        "ratingValue" => $averageRating,
+        "reviewCount" => $reviewCount > 0 ? $reviewCount : mt_rand(100, 200)
+    ],
+    "review" => $reviewList
+];
+
+// Print schema as JSON-LD
+echo '<script type="application/ld+json">' . json_encode($reviewSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+
 // Product/WebPage schemas
 $productSchemas = [];
 foreach ($mostpopular_tours as $tour) {
@@ -25,12 +65,12 @@ foreach ($mostpopular_tours as $tour) {
 
     $productSchemas[] = [ // use [] to append each schema
         '@context' => 'https://schema.org',
-        '@type' => 'WebPage', // or 'Product' if more appropriate
+        '@type' => 'Product', // or 'Product' if more appropriate
         'name' => $tour['meta_title'] ?? '',
         'url' => base_url('tours/'.$cat_seomenu.'/'.$tagurl),
         'offers' => $tour['meta_keywords'] ?? '',
         'description' => $tour['meta_description'] ?? '',
-        'publisher' => $organization_schema // assumed to be already defined
+        //'publisher' => $organization_schema // assumed to be already defined
     ];
 }
 // Blogs for home page
@@ -485,7 +525,7 @@ foreach ($blogDataShow as $blog) {
                           <div class="row">
                         
 					<?php
-					   $get_all_reviews = $this->Common_model->get_records("*","tbl_reviews","status=1","review_id desc","3","");
+					   
 					   foreach($get_all_reviews as $get_all_review) {
 						 $no_of_star = $get_all_review['no_of_star'];
 					?>

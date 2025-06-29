@@ -12,8 +12,9 @@
 		
 		<?php
 			// $tour_tagid = '';
-			function getVerifiedReviews($tour_tagid) {
+			function getVerifiedReviews($tour_tagid,$tour_tag_name) {
 				$tour_tagid = isset($_GET['tour_tagid']) ? $_GET['tour_tagid'] : '';
+				$tour_tag_name = isset($_GET['$tour_tag_name']) ? $_GET['$tour_tag_name'] : '';
 			}
 		?>
 		<div class="sb-container col-md-12 container-example1">						
@@ -58,7 +59,12 @@
 								"bestRating" => "5"
 							],
 							"reviewBody" => $feedback_msg,
-							"datePublished" => $review_date
+							"datePublished" => $review_date,
+							"itemReviewed" => [
+                                "@type" => "TouristTrip",
+                                "name" => $tour_tag_name,
+                                "url" => current_url()
+                            ]
 						];
 					}
 			?>

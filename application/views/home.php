@@ -58,21 +58,35 @@ echo '<script type="application/ld+json">' . json_encode($reviewSchema, JSON_UNE
 
 // Product/WebPage schemas
 $productSchemas = [];
+
 foreach ($mostpopular_tours as $tour) {
+    $tagid = $tour['tagid'];
     $tagurl = $tour['tag_url'];
     $catname = $tour['cat_name'];
     $cat_seomenu = $this->Common_model->makeSeoUrl($catname);
 
-    $productSchemas[] = [ // use [] to append each schema
+    $tourpackages_MinPrice = $this->Common_model->showname_fromid(
+        "MIN(b.price)",
+        "tbl_tags as a, tbl_tourpackages as b",
+        "a.type_id=b.tourpackageid and a.tagid ='$tagid' and a.type=3 and b.status=1"
+    );
+
+    $productSchemas[] = [
         '@context' => 'https://schema.org',
-        '@type' => 'Product', // or 'Product' if more appropriate
+        '@type' => 'Product',
         'name' => $tour['meta_title'] ?? '',
-        'url' => base_url('tours/'.$cat_seomenu.'/'.$tagurl),
-        'offers' => $tour['meta_keywords'] ?? '',
+        'image' => base_url('uploads/' . $tour['menutagthumb_img']), // ✅ image added here
+        'url' => base_url('tours/' . $cat_seomenu . '/' . $tagurl),
         'description' => $tour['meta_description'] ?? '',
-        //'publisher' => $organization_schema // assumed to be already defined
+        'offers' => [
+            '@type' => 'Offer',
+            'price' => (float) $tourpackages_MinPrice,
+            'priceCurrency' => 'INR',
+            'availability' => 'http://schema.org/InStock'
+        ]
     ];
 }
+
 // Blogs for home page
 $blogDataShow = $this->Common_model->get_records("*", "tbl_blog", "status='1' and show_in_home='1'", "blogid desc", "3", "0");
 
